@@ -6,6 +6,6 @@ export const command = new Command({
     
     args: [],
     execute: async (message) => {
-        message.reply(`Name is: ${message.guild!.name}`)
+        message.reply(`<@${message.author.id}>, you suck`)
     }
 })
