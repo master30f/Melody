@@ -1,0 +1,12 @@
+{
+    "title": "Commands",
+    "description": "*<argument> - Required\n[argument] - Optional\n\n:book: - Complex command, type `${prefix}help <command>` for more info*",
+    "color": 45264,
+    "fields": "$${categories}",
+    "author": {
+        "name": "Prefix: ${prefix}"
+    },
+    "footer": {
+        "text": "Type ${prefix}help <command> for further info"
+    }
+}

@@ -1,0 +1,26 @@
+{
+  "name": "melody",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "ts-node src/index.ts",
+    "dev": "nodemon src/index.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@discordjs/opus": "github:discordjs/opus",
+    "@discordjs/voice": "^0.7.5",
+    "discord.js": "^13.1.0",
+    "dotenv": "^10.0.0",
+    "glob": "^7.2.0",
+    "tweetnacl": "^1.0.3",
+    "youtube-search-api": "^1.0.11",
+    "ytdl-core": "^4.9.1"
+  },
+  "devDependencies": {
+    "@types/glob": "^7.1.4"
+  }
+}

@@ -1,0 +1,65 @@
+{
+  "guilds": {
+    "790607991149166592": { "settings": { "prefix": "," } },
+    "845239085076578304": {
+      "settings": { "prefix": ["!", ",", "prosim mloude pls pls"] },
+      "playlists": {
+        "gaming": [
+          {
+            "id": "f8FAJXPBdOg",
+            "name": "The Molecular Shape of You (Ed Sheeran Parody) | A Capella Science",
+            "channelName": "acapellascience",
+            "length": "4:45",
+            "thumbnail": "https://i.ytimg.com/vi/f8FAJXPBdOg/hq720.jpg?sqp=-oaymwEjCOgCEMoBSFryq4qpAxUIARUAAAAAGAElAADIQj0AgKJDeAE=&rs=AOn4CLA-_rIi95xQOBAtGqvOOL9v_c-MWQ"
+          },
+          {
+            "id": "FtutLA63Cp8",
+            "name": "【東方】Bad Apple!! ＰＶ【影絵】",
+            "channelName": "kasidid2",
+            "length": "3:40",
+            "thumbnail": "https://i.ytimg.com/vi/FtutLA63Cp8/hqdefault.jpg?sqp=-oaymwEjCOADEI4CSFryq4qpAxUIARUAAAAAGAElAADIQj0AgKJDeAE=&rs=AOn4CLDBi8MNisqJiwUKXU8t3Z7SLsWxsw"
+          },
+          {
+            "id": "IlHxmJJ6euk",
+            "name": "Best gaming music for TRYHARD No. 2",
+            "channelName": "TRABITY",
+            "length": "1:02:55",
+            "thumbnail": "https://i.ytimg.com/vi/IlHxmJJ6euk/hq720.jpg?sqp=-oaymwEjCOgCEMoBSFryq4qpAxUIARUAAAAAGAElAADIQj0AgKJDeAE=&rs=AOn4CLCTFyTIPfqm___7Mqbz8HEYG2Y9MA"
+          }
+        ],
+        "vitek": [
+          {
+            "id": "cPJUBQd-PNM",
+            "name": "\"Revenge\" - A Minecraft Parody of Usher's DJ Got Us Fallin' In Love (Music Video)",
+            "channelName": "CaptainSparklez",
+            "length": "4:25",
+            "thumbnail": "https://i.ytimg.com/vi/cPJUBQd-PNM/hqdefault.jpg?sqp=-oaymwEjCOADEI4CSFryq4qpAxUIARUAAAAAGAElAADIQj0AgKJDeAE=&rs=AOn4CLBl_l6n0sMJu0sx-ZHdfzmlH0M_9Q"
+          },
+          {
+            "id": "btPJPFnesV4",
+            "name": "Survivor - Eye Of The Tiger (Official HD Video)",
+            "channelName": "Survivor Band",
+            "length": "4:05",
+            "thumbnail": "https://i.ytimg.com/vi/btPJPFnesV4/hq720.jpg?sqp=-oaymwEjCOgCEMoBSFryq4qpAxUIARUAAAAAGAElAADIQj0AgKJDeAE=&rs=AOn4CLDTJdOHvuJWHr7sLB0VIyNLoPPV1w"
+          },
+          {
+            "id": "fHI8X4OXluQ",
+            "name": "The Weeknd - Blinding Lights (Official Audio)",
+            "channelName": "The Weeknd",
+            "length": "3:24",
+            "thumbnail": "https://i.ytimg.com/vi/fHI8X4OXluQ/hq720.jpg?sqp=-oaymwEjCOgCEMoBSFryq4qpAxUIARUAAAAAGAElAADIQj0AgKJDeAE=&rs=AOn4CLBYpBs-GQwg2_XaplqLXdiSZKRgHg"
+          },
+          {
+            "id": "vYVLNTg10tw",
+            "name": "24kGoldn - Mood (Lyrics) ft. Iann Dior [10 HOURS]",
+            "channelName": "In My Hand",
+            "length": "10:00:02",
+            "thumbnail": "https://i.ytimg.com/vi/vYVLNTg10tw/hq720.jpg?sqp=-oaymwEjCOgCEMoBSFryq4qpAxUIARUAAAAAGAElAADIQj0AgKJDeAE=&rs=AOn4CLA9U2_4KtHfhwdfbbat47hWwLDxVg"
+          }
+        ]
+      }
+    },
+    "864167554757951518": { "settings": { "prefix": "," } }
+  },
+  "settings": { "prefix": "," }
+}
