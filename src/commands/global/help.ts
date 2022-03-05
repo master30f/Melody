@@ -1,18 +1,18 @@
-import { CommandInteractionOptionResolver } from "discord.js";
-import { Command } from "../../client/Command";
-import { parseEmbed } from "../../utils/parseEmbed";
+import { CommandInteractionOptionResolver } from "discord.js"
+import { Command } from "../../client/Command"
+import { parseEmbed } from "../../utils/parseEmbed"
 
 export const command = new Command({
     description: "Shows this message",
     category: ":tools: Miscellaneous",
-    
+
     args: [
         {
             name: "command",
             type: "string",
             description: "lololol",
-            optional: true
-        }
+            optional: true,
+        },
     ],
     execute: async (message, args, self, client) => {
         const cmd = args.command as string | undefined
@@ -21,37 +21,80 @@ export const command = new Command({
             let command = client.globalCommands.get(cmd)
 
             if (command != null) {
-                let subcommandEmbeds = []
-                for(let subcommand of command.subCommands ? command.subCommands: []){
-                    subcommandEmbeds.push(parseEmbed("help/subcommand",{
-                        name: subcommand.name!, 
-                        description: subcommand.description!,
-                        aliases: subcommand.aliases? subcommand.aliases!.join(", "):" ",
+                const prefix = client.getPrefix(message.guild)
 
-                    }))
-                }  
-                await message.reply({
-                    embeds: [parseEmbed("help/command", {
-                        name: command.name!, 
-                        description: command.description!,
-                        aliases: command.aliases? command.aliases!.join(", "):" ",
-                        subcommands: subcommandEmbeds
-                    })]
+                const argsEmbed = parseEmbed("help/command/arguments", {
+                    arguments: command.args
+                        .map(
+                            (arg) =>
+                                `\`${arg.optional ? "[" : "<"}${arg.name}${
+                                    arg.optional ? "]" : ">"
+                                }\` **${arg.type}**${
+                                    arg.description
+                                        ? ` *${arg.description}*`
+                                        : ""
+                                }`
+                        )
+                        .join("\n"),
                 })
-            }
-            else {
+
+                const subsEmbed = parseEmbed("help/command/subcommands", {
+                    subcommands: (command.subCommands || []).map(
+                        (subCommand) => {
+                            let argReps: string[] = []
+
+                            for (const arg of subCommand.args) {
+                                argReps.push(
+                                    arg.optional
+                                        ? `[${arg.name}]`
+                                        : `<${arg.name}>`
+                                )
+                            }
+
+                            const args: string = argReps.join(" ")
+
+                            return `**${subCommand.name}** ${
+                                args ? `\`${args}\` ` : ""
+                            }${
+                                subCommand.description
+                                    ? `*${subCommand.description}*`
+                                    : ""
+                            }${subCommand.subCommands ? " :book:" : ""}`
+                        }
+                    ).join("\n"),
+                })
+
+                let fields = []
+                if (command.args.length > 0) fields.push(argsEmbed)
+                if (command.subCommands && command.subCommands.length > 0)
+                    fields.push(subsEmbed)
+
+                await message.reply({
+                    embeds: [
+                        parseEmbed("help/command", {
+                            name: command.name!,
+                            description: command.description || "None",
+                            category: command.category || "None",
+                            aliases: command.aliases
+                                ? command.aliases.join(", ")
+                                : "None",
+                            fields: fields,
+                            prefix:
+                                typeof prefix == "string" ? prefix : prefix[0],
+                        }),
+                    ],
+                })
+            } else {
                 await message.reply(`Could not find command ${cmd}`)
             }
-        }
-        else {
+        } else {
             const categories: Map<string, Command[]> = new Map()
             for (const commandName of client.globalCommands.keys()) {
                 const command = client.globalCommands.get(commandName)!
                 const category = command.category || "Other"
                 if (categories.has(category)) {
                     categories.get(category)?.push(command)
-                }
-                else {
+                } else {
                     categories.set(category, [command])
                 }
             }
@@ -62,31 +105,41 @@ export const command = new Command({
                 const commandReps: string[] = []
                 for (const command of commands) {
                     let argReps: string[] = []
-                    
+
                     for (const arg of command.args) {
-                        argReps.push(arg.optional ? `[${arg.name}]` : `<${arg.name}>`)
+                        argReps.push(
+                            arg.optional ? `[${arg.name}]` : `<${arg.name}>`
+                        )
                     }
-                    
+
                     const args: string = argReps.join(" ")
-                    commandReps.push(`**${command.name}** ${args ? `\`${args}\` ` : ""}${command.description ? `*${command.description}*` : ""}${command.subCommands ? " :book:" : ""}`)
+                    commandReps.push(
+                        `**${command.name}** ${args ? `\`${args}\` ` : ""}${
+                            command.description
+                                ? `*${command.description}*`
+                                : ""
+                        }${command.subCommands ? " :book:" : ""}`
+                    )
                 }
                 const commandString = commandReps.join("\n")
-                categoryEmbeds.push(parseEmbed("help/category", {
-                    name: categoryName,
-                    commands: commandString
-                }))
+                categoryEmbeds.push(
+                    parseEmbed("help/category", {
+                        name: categoryName,
+                        commands: commandString,
+                    })
+                )
             }
-            
+
             const prefix = client.getPrefix(message.guild)
             await message.reply({
                 embeds: [
                     parseEmbed("help", {
                         prefix: typeof prefix == "string" ? prefix : prefix[0],
-                        categories: categoryEmbeds
-                    })
-                ]
+                        categories: categoryEmbeds,
+                    }),
+                ],
             })
             return
         }
-    }
+    },
 })
