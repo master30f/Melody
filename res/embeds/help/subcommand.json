@@ -1,0 +1,4 @@
+{
+  "name": "Subcommand: ${name}",
+  "value": "*This subcomman does: ${description}*\naliases: ${aliases}"
+}

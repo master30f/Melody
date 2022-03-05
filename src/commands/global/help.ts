@@ -1,3 +1,4 @@
+import { CommandInteractionOptionResolver } from "discord.js";
 import { Command } from "../../client/Command";
 import { parseEmbed } from "../../utils/parseEmbed";
 
@@ -20,9 +21,23 @@ export const command = new Command({
             let command = client.globalCommands.get(cmd)
 
             if (command != null) {
-                await message.reply(`**${command.name}** : *${command.category}*\n${command.description}\n${command.args.map((arg) => {
-                    arg.name
-                }).join(", ")}`)
+                let subcommandEmbeds = []
+                for(let subcommand of command.subCommands ? command.subCommands: []){
+                    subcommandEmbeds.push(parseEmbed("help/subcommand",{
+                        name: subcommand.name!, 
+                        description: subcommand.description!,
+                        aliases: subcommand.aliases? subcommand.aliases!.join(", "):" ",
+
+                    }))
+                }  
+                await message.reply({
+                    embeds: [parseEmbed("help/command", {
+                        name: command.name!, 
+                        description: command.description!,
+                        aliases: command.aliases? command.aliases!.join(", "):" ",
+                        subcommands: subcommandEmbeds
+                    })]
+                })
             }
             else {
                 await message.reply(`Could not find command ${cmd}`)

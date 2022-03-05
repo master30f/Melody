@@ -21,7 +21,7 @@ export const command = new Command({
         const guild = message.guild
         if (guild == null) {
             await message.reply(
-                "You must be in a guild to use this bot!"
+                "You must be in a server to use this bot!"
             )
             return
         }

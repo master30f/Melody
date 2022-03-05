@@ -1,0 +1,7 @@
+{
+    "title": "**Command**: ${name}",
+    "description": "*This command does:${description}*\naliases: ${aliases}\nSubcommands:",
+    "color": 11160395,
+    "fields": "$${subcommands}"
+
+}
