@@ -4,7 +4,7 @@ import { play } from "../utils/play";
 export interface Song {
     name: string
     channelName: string
-    id: string
+    url: string
     thumbnail: string
     length: string
 }

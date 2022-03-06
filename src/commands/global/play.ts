@@ -1,8 +1,8 @@
-import { Command } from "../../client/Command";
-import { newPlayer, Song } from "../../data/Memory";
-import { parseEmbed } from "../../utils/parseEmbed";
-import { play } from "../../utils/play";
-const { GetListByKeyword } = require("youtube-search-api")
+import { Command } from "../../client/Command"
+import { newPlayer, Song } from "../../data/Memory"
+import { parseEmbed } from "../../utils/parseEmbed"
+import { play } from "../../utils/play"
+import playdl from "play-dl"
 
 export const command = new Command({
     aliases: [
@@ -33,14 +33,14 @@ export const command = new Command({
             client.runCommand(message, "join", [])
         }
 
-        const songSearch = (await GetListByKeyword(videoQuerry)).items[0]
+        const songSearch = (await playdl.search(videoQuerry))[0]
 
         const song: Song = {
-            id: songSearch.id,
-            name: songSearch.title,
-            channelName: songSearch.channelTitle,
-            length: songSearch.length.simpleText,
-            thumbnail: songSearch.thumbnail.thumbnails[0].url
+            url: songSearch.url,
+            name: songSearch.title || "",
+            channelName: songSearch.channel?.name || "",
+            length: songSearch.durationRaw,
+            thumbnail: songSearch.thumbnails[0].url
         }
         
         if (guildMemory.player == null) {
@@ -59,7 +59,7 @@ export const command = new Command({
                     videoName: song.name,
                     length: song.length,
                     channelName: song.channelName,
-                    videoLink: `https://youtu.be/${song.id}`,
+                    videoLink: song.url,
                     messageType: "Currently playing",
                     thumbnail: song.thumbnail
                 })]
@@ -72,7 +72,7 @@ export const command = new Command({
                     videoName: song.name,
                     length: song.length,
                     channelName: song.channelName,
-                    videoLink: `https://youtu.be/${song.id}`,
+                    videoLink: song.url,
                     messageType: "Added to queue",
                     thumbnail: song.thumbnail
                 })]

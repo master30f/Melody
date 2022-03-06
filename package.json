@@ -16,10 +16,9 @@
     "discord.js": "^13.1.0",
     "dotenv": "^10.0.0",
     "glob": "^7.2.0",
+    "play-dl": "^1.8.9",
     "ts-node": "^10.6.0",
-    "tweetnacl": "^1.0.3",
-    "youtube-search-api": "^1.0.11",
-    "ytdl-core": "^4.9.1"
+    "tweetnacl": "^1.0.3"
   },
   "devDependencies": {
     "@types/glob": "^7.1.4"

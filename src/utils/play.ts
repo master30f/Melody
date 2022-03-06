@@ -1,13 +1,13 @@
 import { createAudioResource } from "@discordjs/voice";
-import ytdl from "ytdl-core";
+import playdl from "play-dl";
 import { Player } from "../data/Memory";
 
 export async function play(player: Player) {
     const queue = player.queue
 
-    const stream = ytdl(queue[0].id, {
-        filter: "audioonly",
+    const stream = await playdl.stream(queue[0].url)
+    const resource = createAudioResource(stream.stream, {
+        inputType: stream.type
     })
-    const resource = createAudioResource(stream)
     player.subscription.player.play(resource)
 }
