@@ -315,7 +315,7 @@ export default class Client {
         if (length != null) {
             let str = message.content.substr(length).replace(/\s+/g,' ').trim();
             let pieces = str.split(" ")
-            let commandName = pieces[0]
+            let commandName = pieces[0].toLowerCase()
             let args = pieces.slice(1)
             console.log(`Received command '${commandName}'`)
 
