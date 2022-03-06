@@ -7,9 +7,11 @@ export const command = new Command({
     subCommands: [
         new Command({
             name: "set",
+            description: "Sets a prefix",
             args: [
                 {
                     name: "prefix",
+                    description: "A short word or character that will be used to trigger the bot",
                     type: "string..."
                 }
             ],
@@ -22,6 +24,11 @@ export const command = new Command({
         }),
         new Command({
             name: "get",
+            aliases: [
+                "view",
+                "show"
+            ],
+            description: "Shows the current prefix",
             args: [],
             execute: async (message, args, self, client) => {
                 await message.reply(`Current prefix is \`${client.getPrefix(message.guild)}\``)
@@ -29,9 +36,11 @@ export const command = new Command({
         }),
         new Command({
             name: "add",
+            description: "Adds a prefix",
             args: [
                 {
                     name: "prefix",
+                    description: "A short word or character that will be used to trigger the bot",
                     type: "string..."
                 }
             ],
@@ -51,9 +60,11 @@ export const command = new Command({
         }),
         new Command({
             name: "remove",
+            description: "Removes a prefix",
             args: [
                 {
                     name: "prefix",
+                    description: "The prefix you want to remove",
                     type: "string..."
                 }
             ],

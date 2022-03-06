@@ -10,10 +10,11 @@ export const command = new Command({
     subCommands: [
         new Command({
             name: "new",
-
+            description: "Creates a new playlist",
             args: [
                 {
                     name: "name",
+                    description: "Name of the new playlist",
                     type: "string"
                 }
             ],
@@ -44,10 +45,11 @@ export const command = new Command({
         }),
         new Command({
             name: "play",
-
+            description: "Plays a given playlist",
             args: [
                 {
                     name: "name",
+                    description: "Name of the playlist",
                     type: "string"
                 }
             ],

@@ -2,7 +2,8 @@ import { Command } from "../../client/Command";
 
 export const command = new Command({
     aliases: [
-        "q"
+        "q",
+        "que"
     ],
     description: "Queue related commands",
     category: ":musical_note: Music",
@@ -10,7 +11,11 @@ export const command = new Command({
     subCommands: [
         new Command({
             name: "get",
-
+            aliases: [
+                "view",
+                "show"
+            ],
+            description: "Shows the queue",
             args: [],
             execute: async (message, args, self, client) => {
                 const guild = message.guild
@@ -34,9 +39,10 @@ export const command = new Command({
         }),
         /*new Command({
             name: "add",
-
+            description: "Adds a song to the queue", 
             args: [{
                 name: "song",
+                description: "Name or link of the song",
                 type: "string..."
             }],
             execute: async (message, args, self, client) => {
@@ -63,7 +69,7 @@ export const command = new Command({
         }),*/
         new Command({
             name: "clear",
-
+            description: "Clears the queue",
             args: [],
             execute: async (message, args, self, client) => {
                 const song = args.song as string

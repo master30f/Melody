@@ -13,6 +13,7 @@ export const command = new Command({
     
     args: [{
         name: "querry",
+        description: "Name or link of the song",
         type: "string...",
     }],
     execute: async (message, args, self, client) => {

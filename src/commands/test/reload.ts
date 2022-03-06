@@ -1,7 +1,7 @@
 import { Command } from "../../client/Command";
 
 export const command = new Command({
-    description: "",
+    description: "Reboots the bot",
     
     args: [],
     execute: async (message, args, self, client) => {
