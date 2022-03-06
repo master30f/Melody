@@ -37,7 +37,7 @@ export const command = new Command({
                     videoName: song.name,
                     length: song.length,
                     channelName: song.channelName,
-                    videoLink: `https://youtu.be/${song.id}`,
+                    videoLink: song.url,
                     messageType: "Currently playing",
                     thumbnail: song.thumbnail
                 })]
