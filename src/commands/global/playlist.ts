@@ -1,4 +1,6 @@
 import { Command } from "../../client/Command";
+import { newPlayer } from "../../data/Memory";
+import { play } from "../../utils/play";
 
 export const command = new Command({
     aliases: [
@@ -68,9 +70,15 @@ export const command = new Command({
 
                 const guildMemory = client.getGuildMemory(guild)
 
-                await client.runCommand(message, "play", [playlist[0].url])
+                if (guildMemory.player == null) {
+                    guildMemory.player = newPlayer(guildMemory, playlist[0])
+                    guildMemory.player.queue.push(...playlist.slice(1))
+                }
+                else {
+                    guildMemory.player.queue = playlist
+                }
 
-                guildMemory.player!.queue = playlist
+                play(guildMemory.player!)
             }
         })
     ],

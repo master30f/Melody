@@ -19,7 +19,7 @@ function stringify(option: Option): string {
         }
         return JSON.stringify(option)
     }
-    return "%%%% UNREACHABLEEEEEEE %%%%"
+    throw new Error(`Object ${option} can not be strigified`)
 }
 
 export function parseEmbed(name: string, options?: EmbedOptions): object {
