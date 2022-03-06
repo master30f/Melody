@@ -68,7 +68,7 @@ export const command = new Command({
 
                 const guildMemory = client.getGuildMemory(guild)
 
-                await client.runCommand(message, "play", [`https://youtu.be/${playlist[0].id}`])
+                await client.runCommand(message, "play", [playlist[0].url])
 
                 guildMemory.player!.queue = playlist
             }
