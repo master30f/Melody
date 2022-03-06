@@ -25,8 +25,10 @@ export const command = new Command({
 
         const player = guildMemory.player
         if (player != null) {
+            message.reply(`Stopping`)
             flushPlayer(player)
             guildMemory.player = undefined
+            message.reply(`Stopped`)
         }
     }
 })
