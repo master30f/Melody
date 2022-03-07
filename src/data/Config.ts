@@ -4,8 +4,14 @@ export interface Settings {
     prefix: string | string[]
 }
 
+export interface Playlist {
+    songs: Song[],
+    author: string,
+    name: string
+}
+
 export interface Playlists {
-    [propName: string]: Song[]
+    [propName: string]: Playlist
 }
 
 export interface Guild {

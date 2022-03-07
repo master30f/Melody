@@ -1,1 +1,46 @@
-{"guilds":{"790607991149166592":{"settings":{"prefix":"!"}},"845239085076578304":{"settings":{"prefix":["!",",","prosim mloude pls pls"]},"playlists":{"Edicek":[{"url":"https://www.youtube.com/watch?v=JGwWNGJdvx8","name":"Ed Sheeran - Shape of You (Official Music Video)","channelName":"Ed Sheeran","length":"4:24","thumbnail":"https://i.ytimg.com/vi/JGwWNGJdvx8/hqdefault.jpg?sqp=-oaymwEcCOADEI4CSFXyq4qpAw4IARUAAIhCGAFwAcABBg==&rs=AOn4CLCtA7onuiJmHyjpL6XPfyW6d_fSeg"},{"url":"https://www.youtube.com/watch?v=Il0S8BoucSA","name":"Ed Sheeran - Shivers [Official Video]","channelName":"Ed Sheeran","length":"3:58","thumbnail":"https://i.ytimg.com/vi/Il0S8BoucSA/hq720.jpg?sqp=-oaymwEcCOgCEMoBSFXyq4qpAw4IARUAAIhCGAFwAcABBg==&rs=AOn4CLCp47OJx65fO6J1dX1jrMFfEQ46ag"}]}},"864167554757951518":{"settings":{"prefix":","}}},"settings":{"prefix":","}}
+{
+    "guilds": {
+        "790607991149166592": { "settings": { "prefix": "!" } },
+        "845239085076578304": {
+            "settings": { "prefix": ["!", ",", "prosim mloude pls pls"] },
+            "playlists": {
+                "Jachym": {
+                    "songs": [
+                        {
+                            "url": "https://www.youtube.com/watch?v=NrI-UBIB8Jk",
+                            "name": "1. Blue Swede - Hooked on a Feeling",
+                            "channelName": "Joel Gustafsson",
+                            "length": "2:48",
+                            "thumbnail": "https://i.ytimg.com/vi/NrI-UBIB8Jk/hq720.jpg?sqp=-oaymwEcCOgCEMoBSFXyq4qpAw4IARUAAIhCGAFwAcABBg==&rs=AOn4CLCltJoKMtObhVGmP7_fjGj-2T6TtQ"
+                        },
+                        {
+                            "url": "https://www.youtube.com/watch?v=wuJIqmha2Hk",
+                            "name": "Mr. Blue Sky",
+                            "channelName": "ELO",
+                            "length": "5:03",
+                            "thumbnail": "https://i.ytimg.com/vi/wuJIqmha2Hk/hq720.jpg?sqp=-oaymwEcCOgCEMoBSFXyq4qpAw4IARUAAIhCGAFwAcABBg==&rs=AOn4CLAuXWIsW2WL2s27zG2Y_XgpKFw8WQ"
+                        },
+                        {
+                            "url": "https://www.youtube.com/watch?v=AJ4nEWuUekw",
+                            "name": "Neil Nathan - You're My Lady (Official Music Video)",
+                            "channelName": "neilnathan",
+                            "length": "2:14",
+                            "thumbnail": "https://i.ytimg.com/vi/AJ4nEWuUekw/hqdefault.jpg?sqp=-oaymwEcCOADEI4CSFXyq4qpAw4IARUAAIhCGAFwAcABBg==&rs=AOn4CLALaUyOyhBC3KFt64Pb7vtQ6orbsQ"
+                        },
+                        {
+                            "url": "https://www.youtube.com/watch?v=3MMMe1drnZY",
+                            "name": "\"Guardians' Inferno\" | Marvel Studios’ Guardians of the Galaxy Vol. 2",
+                            "channelName": "Marvel Entertainment",
+                            "length": "3:39",
+                            "thumbnail": "https://i.ytimg.com/vi/3MMMe1drnZY/hq720.jpg?sqp=-oaymwEcCOgCEMoBSFXyq4qpAw4IARUAAIhCGAFwAcABBg==&rs=AOn4CLB53Ue9eyIW57gSnLie6q8Ab-J7yw"
+                        }
+                    ],
+                    "author": "483922892153815040",
+                    "name": "Jachym"
+                }
+            }
+        },
+        "864167554757951518": { "settings": { "prefix": "," } }
+    },
+    "settings": { "prefix": "," }
+}

@@ -1,0 +1,9 @@
+{
+    "title": "${videoName}",
+    "description": "${length} | **${channelName}**",
+    "url": "${videoLink}",
+    "color": 15990784,
+    "thumbnail": {
+        "url": "${thumbnail}"
+    }
+}
