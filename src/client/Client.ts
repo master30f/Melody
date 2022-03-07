@@ -145,7 +145,6 @@ export default class Client {
     }
 
     async executeCommand(commandName: string, command: Command, message: Message, args: string[]) {
-        if (commandName != "exec")
             console.log(`Found command '${commandName}'`)
 
         if (command.args.length === 0 || command.args[command.args.length-1].type !== "string...") {
@@ -210,7 +209,6 @@ export default class Client {
         }
 
         await command.execute(message, newArgs, command, this)
-        if (commandName != "exec")
             console.log(`Executed command '${commandName}'\n`)
     }
 
@@ -265,6 +263,9 @@ export default class Client {
                         message.reply("Error")
                     } else {
                         map.set(subCommand.name, subCommand)
+                        for(let alias of subCommand.aliases || []){
+                            map.set(alias, subCommand)
+                        }
                     }
                 })
                 await this.runCommand(message, args[0], args.slice(1), map, false, undefined, async () => {
@@ -318,7 +319,6 @@ export default class Client {
             let pieces = str.split(" ")
             let commandName = pieces[0].toLowerCase()
             let args = pieces.slice(1)
-            if (commandName != "exec")
                 console.log(`Received command '${commandName}'`)
 
             try {

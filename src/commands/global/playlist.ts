@@ -12,7 +12,13 @@ export const command = new Command({
 
     subCommands: [
         new Command({
-            name: "new",
+            name: "fromqueue",
+            aliases: 
+            [
+                "createfromqueue",
+                "makefromqueue",
+                "newfromqueue"
+            ],
             description: "Creates a new playlist from the current queue",
             args: [
                 {
@@ -255,6 +261,62 @@ export const command = new Command({
                         author: playlist.author,
                     }), ...songsEmbeds]
                 })
+            }
+        }),
+        new Command({
+            name: "delete",
+            description: "Deletes a playlist",
+            args: [
+                {
+                    name: "playlist",
+                    description: "Name of the playlist",
+                    type: "string",
+                },
+            ],
+            execute: async (message, args, self, client) => {
+                const guild = message.guild
+                const playlistName = args.playlist as string
+                if (guild == null) {
+                    await message.reply(
+                        "You must be in a guild to use this bot!"
+                    )
+                    return
+                }
+                message.reply(`Deleting playlist ${playlistName} `)
+
+                delete client.config.guilds[guild.id].playlists[playlistName]
+            }
+        }),
+        new Command({
+            name: "new",
+            aliases: 
+            [
+                "create",
+                "make"
+            ],
+            description: "Creates a new empty playlist",
+            args: [
+                {
+                    name: "playlist",
+                    description: "Name of the playlist",
+                    type: "string",
+                },
+            ],
+            execute: async (message, args, self, client) => {
+                const playlistName = args.name as string
+
+                const guild = message.guild
+                if (guild == null) {
+                    await message.reply(
+                        "You must be in a guild to use this bot!"
+                    )
+                    return
+                }
+                client.config.guilds[guild.id].playlists[playlistName] = {
+                    author: message.author.id,
+                    name: playlistName,
+                    songs: []
+                }
             }
         })
     ],
