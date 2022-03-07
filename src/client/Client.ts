@@ -145,7 +145,8 @@ export default class Client {
     }
 
     async executeCommand(commandName: string, command: Command, message: Message, args: string[]) {
-        console.log(`Found command '${commandName}'`)
+        if (commandName != "exec")
+            console.log(`Found command '${commandName}'`)
 
         if (command.args.length === 0 || command.args[command.args.length-1].type !== "string...") {
             const possibleLenghts: number[] = []
@@ -161,7 +162,6 @@ export default class Client {
                 return
             }
         }
-        console.log(`executeCommand: ${args}`)
         let newArgs: {[propName: string]: ArgTypes} = {}
         try {
             let index = 0
@@ -210,7 +210,8 @@ export default class Client {
         }
 
         await command.execute(message, newArgs, command, this)
-        console.log(`Executed command '${commandName}'\n`)
+        if (commandName != "exec")
+            console.log(`Executed command '${commandName}'\n`)
     }
 
     async runCommand(message: Message, commandName: string, args: string[], storage: Map<string, Command> = this.testCommands, useTwoStorages: boolean = true, storage2: Map<string, Command> = this.globalCommands, noCommandCallback?: (commandName: string) => Promise<void>) {
@@ -317,7 +318,8 @@ export default class Client {
             let pieces = str.split(" ")
             let commandName = pieces[0].toLowerCase()
             let args = pieces.slice(1)
-            console.log(`Received command '${commandName}'`)
+            if (commandName != "exec")
+                console.log(`Received command '${commandName}'`)
 
             try {
                 await this.runCommand(message, commandName, args)
