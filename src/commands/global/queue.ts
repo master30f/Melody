@@ -1,20 +1,31 @@
-import { Command } from "../../client/Command";
+import {
+    AudioPlayerPausedState,
+    AudioPlayerPlayingState,
+    AudioPlayerState,
+    AudioPlayerStatus,
+} from "@discordjs/voice"
+import { Command } from "../../client/Command"
+import formattedTimeToSeconds from "../../utils/formattedTimeToSeconds"
+import { parseEmbed } from "../../utils/parseEmbed"
 
+function isStateValid(
+    state: AudioPlayerState
+): state is AudioPlayerPlayingState | AudioPlayerPausedState {
+    return [
+        AudioPlayerStatus.Playing,
+        AudioPlayerStatus.Paused,
+        AudioPlayerStatus.AutoPaused,
+    ].includes(state.status)
+}
 export const command = new Command({
-    aliases: [
-        "q",
-        "que"
-    ],
+    aliases: ["q", "que"],
     description: "Queue related commands",
     category: ":musical_note: Music",
-    
+
     subCommands: [
         new Command({
             name: "get",
-            aliases: [
-                "view",
-                "show"
-            ],
+            aliases: ["view", "show"],
             description: "Shows the queue",
             args: [],
             execute: async (message, args, self, client) => {
@@ -34,8 +45,70 @@ export const command = new Command({
                     return
                 }
 
-                await message.reply(`Queue:\n${player.queue}`)
-            }
+                let totalLengthSecs = 0
+                let songsEmbeds: object[] = []
+
+                const state = player.subscription.player.state
+                if (isStateValid(state)) {
+                    const songLength = formattedTimeToSeconds(
+                        player.queue[0].length
+                    )
+                    const remainingTime =
+                        songLength - Math.floor(state.playbackDuration / 1000)
+                    totalLengthSecs += remainingTime
+                }
+
+                player.queue.slice(1).forEach((song) => {
+                    // "45:21" => ["45", "21"] => [45, 21]
+                    const secs = formattedTimeToSeconds(song.length)
+
+                    const hours = Math.floor(totalLengthSecs / 3600)
+                    const minutes = Math.floor((totalLengthSecs % 3600) / 60)
+                    const seconds = Math.floor(
+                        ((totalLengthSecs % 3600) % 60) / 1
+                    )
+                    const formattedLength = `${
+                        hours ? `${hours}:` : ""
+                    }${minutes}:${seconds < 10 ? `0${seconds}` : seconds}`
+
+                    songsEmbeds.push(
+                        parseEmbed("queue/song", {
+                            videoName: song.name,
+                            length: song.length,
+                            channelName: song.channelName,
+                            videoLink: song.url,
+                            thumbnail: song.thumbnail,
+                            timeUntil: formattedLength,
+
+                        })
+                    )
+                    totalLengthSecs += secs
+                })
+
+                const hours = Math.floor(totalLengthSecs / 3600)
+                const minutes = Math.floor((totalLengthSecs % 3600) / 60)
+                const seconds = Math.floor(((totalLengthSecs % 3600) % 60) / 1)
+                const formattedLength = `${
+                    hours ? `${hours}:` : ""
+                }${minutes}:${seconds < 10 ? `0${seconds}` : seconds}`
+
+                const songNum1 = player.queue[0]
+
+                await message.reply({
+                    embeds: [
+                        parseEmbed("queue", {
+                            length: songNum1.length,
+                            videoName: songNum1.name,
+                            channelName: songNum1.channelName,
+                            videoLink: songNum1.url,
+                            thumbnail: songNum1.thumbnail,
+                            loopingStatus: player.loop ? ":repeat: Looping enabled" : ":no_entry_sign: Looping disabled",
+                            queueLength: formattedLength
+                        }),
+                        ...songsEmbeds,
+                    ],
+                })
+            },
         }),
         /*new Command({
             name: "add",
@@ -86,18 +159,20 @@ export const command = new Command({
 
                 const player = guildMemory.player
                 if (player == null) {
-                    message.reply("Cannot clear the queue because the queue does not exist!")
+                    message.reply(
+                        "Cannot clear the queue because the queue does not exist!"
+                    )
                     return
                 }
 
                 player.queue = []
-            }
-        })
+            },
+        }),
     ],
 
     args: [],
     execute: async (message, args, self, client) => {
         const getCommand = self.subCommand("get")!
         await getCommand.execute(message, args, self, client)
-    }
+    },
 })

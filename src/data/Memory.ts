@@ -1,4 +1,4 @@
-import { AudioPlayerStatus, createAudioPlayer, PlayerSubscription, VoiceConnection } from "@discordjs/voice";
+import { AudioPlayerStatus, AudioResource, createAudioPlayer, PlayerSubscription, VoiceConnection } from "@discordjs/voice";
 import { play } from "../utils/play";
 
 export interface Song {
@@ -46,7 +46,7 @@ export function newPlayer(memory: LocalMemory, song: Song): Player {
 export interface Player {
     queue: Song[],
     loop: boolean,
-    subscription: PlayerSubscription
+    subscription: PlayerSubscription,
 }
 
 export interface LocalMemory {

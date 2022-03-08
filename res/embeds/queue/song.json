@@ -1,0 +1,12 @@
+{
+    "title": "${videoName}",
+    "description": "${length} | **${channelName}**",
+    "url": "${videoLink}",
+    "color": 15990784,
+    "author": {
+      "name": "Estimated time until playing: ${timeUntil}"
+    },
+    "thumbnail": {
+      "url": "${thumbnail}"
+    }
+  }

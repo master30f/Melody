@@ -10,4 +10,5 @@ export async function play(player: Player) {
         inputType: stream.type
     })
     player.subscription.player.play(resource)
+    console.log(resource.playbackDuration)
 }

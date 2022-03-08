@@ -1,0 +1,16 @@
+{
+  "title": "${videoName}",
+  "description": "${length} | **${channelName}**\n\nEstimated time until end of queue: **${queueLength}**\n${loopingStatus}",
+  "url": "${videoLink}",
+  "color": 15990784,
+  "author": {
+    "name": "Currently playing",
+    "icon_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/79/YouTube_social_red_square_%282017%29.svg/2048px-YouTube_social_red_square_%282017%29.svg.png"
+  },
+  "footer": {
+    "text": "Queue:"
+  },
+  "thumbnail": {
+    "url": "${thumbnail}"
+  }
+}

@@ -1,6 +1,6 @@
-import { Command } from "../../client/Command";
-import { newPlayer, Song } from "../../data/Memory";
-import { play } from "../../utils/play";
+import { Command } from "../../client/Command"
+import { newPlayer, Song } from "../../data/Memory"
+import { play } from "../../utils/play"
 import playdl from "play-dl"
 import { parseEmbed } from "../../utils/parseEmbed"
 import _ from "lodash"
@@ -13,12 +13,7 @@ export const command = new Command({
     subCommands: [
         new Command({
             name: "fromqueue",
-            aliases: 
-            [
-                "createfromqueue",
-                "makefromqueue",
-                "newfromqueue"
-            ],
+            aliases: ["createfromqueue", "makefromqueue", "newfromqueue"],
             description: "Creates a new playlist from the current queue",
             args: [
                 {
@@ -52,7 +47,7 @@ export const command = new Command({
                 client.config.guilds[guild.id].playlists[name] = {
                     songs: player.queue,
                     author: message.author.id,
-                    name: name
+                    name: name,
                 }
             },
         }),
@@ -75,25 +70,30 @@ export const command = new Command({
                     )
                     return
                 }
-
+                
                 const playlist = client.config.guilds[guild.id].playlists[name]
 
                 const guildMemory = client.getGuildMemory(guild)
+                if (guildMemory.connection == null) {
+                    client.runCommand(message, "join", [])
+                }
 
                 if (guildMemory.player == null) {
-                    guildMemory.player = newPlayer(guildMemory, playlist.songs[0])
+                    guildMemory.player = newPlayer(
+                        guildMemory,
+                        playlist.songs[0]
+                    )
                     guildMemory.player.queue.push(...playlist.songs.slice(1))
-                }
-                else {
+                } else {
                     guildMemory.player.queue = playlist.songs
                 }
 
                 play(guildMemory.player!)
-            }
+            },
         }),
         new Command({
             name: "add",
-            aliases: [ "addsong" ],
+            aliases: ["addsong"],
             description: "Adds a song to the given playlist",
             args: [
                 {
@@ -131,20 +131,22 @@ export const command = new Command({
                 }
                 playlist.songs.push(song)
                 await message.reply({
-                    embeds: [parseEmbed("addedToQueue", {
-                        videoName: song.name,
-                        length: song.length,
-                        channelName: song.channelName,
-                        videoLink: song.url,
-                        messageType: `Added to playlist ${playlistName}`,
-                        thumbnail: song.thumbnail
-                    })]
+                    embeds: [
+                        parseEmbed("addedToQueue", {
+                            videoName: song.name,
+                            length: song.length,
+                            channelName: song.channelName,
+                            videoLink: song.url,
+                            messageType: `Added to playlist ${playlistName}`,
+                            thumbnail: song.thumbnail,
+                        }),
+                    ],
                 })
             },
         }),
         new Command({
             name: "remove",
-            aliases: [ "removesong"],
+            aliases: ["removesong"],
             description: "Removes a song from the given playlist",
             args: [
                 {
@@ -179,31 +181,32 @@ export const command = new Command({
                     channelName: songSearch.channel?.name || "",
                     length: songSearch.durationRaw,
                     thumbnail: songSearch.thumbnails[0].url,
-                }            
-                const songToBeRemoved = playlist.songs.findIndex((anotherSong) => song.url == anotherSong.url)
-                if (songToBeRemoved === -1){
+                }
+                const songToBeRemoved = playlist.songs.findIndex(
+                    (anotherSong) => song.url == anotherSong.url
+                )
+                if (songToBeRemoved === -1) {
                     await message.reply("That song is not in the playlist!")
                     return
                 }
                 playlist.songs.splice(songToBeRemoved, 1)
                 await message.reply({
-                    embeds: [parseEmbed("addedToQueue", {
-                        videoName: song.name,
-                        length: song.length,
-                        channelName: song.channelName,
-                        videoLink: song.url,
-                        messageType: `Removed from playlist ${playlistName}`,
-                        thumbnail: song.thumbnail
-                    })]
+                    embeds: [
+                        parseEmbed("addedToQueue", {
+                            videoName: song.name,
+                            length: song.length,
+                            channelName: song.channelName,
+                            videoLink: song.url,
+                            messageType: `Removed from playlist ${playlistName}`,
+                            thumbnail: song.thumbnail,
+                        }),
+                    ],
                 })
-            }
+            },
         }),
         new Command({
             name: "get",
-            aliases: [
-                "view",
-                "show"
-            ],
+            aliases: ["view", "show"],
             description: "Shows the songs in a playlist",
             args: [
                 {
@@ -225,14 +228,16 @@ export const command = new Command({
 
                 const playlist =
                     client.config.guilds[guild.id].playlists[playlistName]
-                
+
                 let totalLengthSecs = 0
                 let songsEmbeds: object[] = []
-                playlist.songs.forEach(song => {
+                playlist.songs.forEach((song) => {
                     // "45:21" => ["45", "21"] => [45, 21]
                     let secs = 0
-                    const pieces = song.length.split(":").map(piece => Number.parseInt(piece))
-                    if (pieces.length === 2){
+                    const pieces = song.length
+                        .split(":")
+                        .map((piece) => Number.parseInt(piece))
+                    if (pieces.length === 2) {
                         pieces.unshift(0)
                     }
                     secs += pieces[0] * 3600
@@ -241,27 +246,34 @@ export const command = new Command({
 
                     totalLengthSecs += secs
 
-                    songsEmbeds.push(parseEmbed("playlist/song", {
-                        videoName: song.name,
-                        length: song.length,
-                        channelName: song.channelName,
-                        videoLink: song.url,
-                        thumbnail: song.thumbnail
-                    }))
+                    songsEmbeds.push(
+                        parseEmbed("playlist/song", {
+                            videoName: song.name,
+                            length: song.length,
+                            channelName: song.channelName,
+                            videoLink: song.url,
+                            thumbnail: song.thumbnail,
+                        })
+                    )
                 })
 
                 const hours = Math.floor(totalLengthSecs / 3600)
                 const minutes = Math.floor((totalLengthSecs % 3600) / 60)
                 const seconds = Math.floor(((totalLengthSecs % 3600) % 60) / 1)
-                const formattedLength = `${hours ? `${hours}:` : ""}${minutes}:${seconds < 10 ? `0${seconds}` : seconds}`
+                const formattedLength = `${
+                    hours ? `${hours}:` : ""
+                }${minutes}:${seconds < 10 ? `0${seconds}` : seconds}`
                 await message.reply({
-                    embeds: [parseEmbed("playlist", {
-                        name: playlist.name,
-                        length: formattedLength,
-                        author: playlist.author,
-                    }), ...songsEmbeds]
+                    embeds: [
+                        parseEmbed("playlist", {
+                            name: playlist.name,
+                            length: formattedLength,
+                            author: playlist.author,
+                        }),
+                        ...songsEmbeds,
+                    ],
                 })
-            }
+            },
         }),
         new Command({
             name: "delete",
@@ -285,15 +297,11 @@ export const command = new Command({
                 message.reply(`Deleting playlist ${playlistName} `)
 
                 delete client.config.guilds[guild.id].playlists[playlistName]
-            }
+            },
         }),
         new Command({
             name: "new",
-            aliases: 
-            [
-                "create",
-                "make"
-            ],
+            aliases: ["create", "make"],
             description: "Creates a new empty playlist",
             args: [
                 {
@@ -315,10 +323,10 @@ export const command = new Command({
                 client.config.guilds[guild.id].playlists[playlistName] = {
                     author: message.author.id,
                     name: playlistName,
-                    songs: []
+                    songs: [],
                 }
-            }
-        })
+            },
+        }),
     ],
 
     args: [],
