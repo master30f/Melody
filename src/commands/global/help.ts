@@ -10,7 +10,7 @@ export const command = new Command({
         {
             name: "command",
             type: "string",
-            description: "lololol",
+            description: "The command you need help with",
             optional: true,
         },
     ],
