@@ -4,6 +4,9 @@ import { play } from "../../utils/play"
 import playdl from "play-dl"
 import { parseEmbed } from "../../utils/parseEmbed"
 import _ from "lodash"
+import formattedTimeToSeconds from "../../utils/formattedTimeToSeconds"
+import getPlaylistLength from "../../utils/getPlaylistLength"
+import formatSeconds from "../../utils/formatSeconds"
 
 export const command = new Command({
     aliases: ["pl"],
@@ -70,7 +73,7 @@ export const command = new Command({
                     )
                     return
                 }
-                
+
                 const playlist = client.config.guilds[guild.id].playlists[name]
 
                 const guildMemory = client.getGuildMemory(guild)
@@ -232,19 +235,7 @@ export const command = new Command({
                 let totalLengthSecs = 0
                 let songsEmbeds: object[] = []
                 playlist.songs.forEach((song) => {
-                    // "45:21" => ["45", "21"] => [45, 21]
-                    let secs = 0
-                    const pieces = song.length
-                        .split(":")
-                        .map((piece) => Number.parseInt(piece))
-                    if (pieces.length === 2) {
-                        pieces.unshift(0)
-                    }
-                    secs += pieces[0] * 3600
-                    secs += pieces[1] * 60
-                    secs += pieces[2] * 1
-
-                    totalLengthSecs += secs
+                    totalLengthSecs += formattedTimeToSeconds(song.length)
 
                     songsEmbeds.push(
                         parseEmbed("playlist/song", {
@@ -311,7 +302,7 @@ export const command = new Command({
                 },
             ],
             execute: async (message, args, self, client) => {
-                const playlistName = args.name as string
+                const playlistName = args.playlist as string
 
                 const guild = message.guild
                 if (guild == null) {
@@ -325,6 +316,45 @@ export const command = new Command({
                     name: playlistName,
                     songs: [],
                 }
+            },
+        }),
+        new Command({
+            name: "list",
+            aliases: ["all"],
+            description: "Shows all playlists of this server",
+            args: [],
+            execute: async (message, args, self, client) => {
+                const guild = message.guild
+                if (guild == null) {
+                    await message.reply(
+                        "You must be in a guild to use this bot!"
+                    )
+                    return
+                }
+                let playlistEmbeds = []
+                for (let playlistName in client.config.guilds[guild.id]
+                    .playlists) {
+                    const playlist =
+                        client.config.guilds[guild.id].playlists[playlistName]
+                    const playlistEmbed = parseEmbed("playlist/list/playlist", {
+                        playlistName: playlistName,
+                        playlistLength: formatSeconds(
+                            getPlaylistLength(playlist)
+                        ),
+                        playlistAuthor: playlist.author,
+                        songNum: playlist.songs.length,
+                    })
+                    playlistEmbeds.push(playlistEmbed)
+                }
+                const playlistNum = Object.values(client.config.guilds[guild.id].playlists).length
+                const embed = parseEmbed("playlist/list", {
+                    playlistNum: playlistNum,
+                    playlists: playlistEmbeds,
+                    s: playlistNum == 1 ? "" : "s"
+                })
+                await message.reply({
+                    embeds: [embed]
+                })
             },
         }),
     ],

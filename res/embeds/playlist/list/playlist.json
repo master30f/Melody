@@ -1,0 +1,4 @@
+{
+    "name": "${playlistName}",
+    "value": "${playlistLength} | **<@${playlistAuthor}>** \n${songNum} songs"
+}

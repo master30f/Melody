@@ -2,7 +2,8 @@ import { MessageEmbed } from "discord.js";
 import { readFileSync } from "fs"
 import { join } from "path"
 
-type Option = (string | object) | (string | object)[]
+type OptionCompound = string | object | number
+type Option = OptionCompound | OptionCompound[]
 
 export interface EmbedOptions {
     [propName: string]: Option
@@ -19,7 +20,10 @@ function stringify(option: Option): string {
         }
         return JSON.stringify(option)
     }
-    throw new Error(`Object ${option} can not be strigified`)
+    if (typeof option == "number") {
+        return option.toString()
+    }
+    throw new Error(`Object ${option} can not be stringified`)
 }
 
 export function parseEmbed(name: string, options?: EmbedOptions): object {

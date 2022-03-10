@@ -1,0 +1,9 @@
+{
+    "description": "This server has ${playlistNum} playlist${s}",
+    "color": 15990784,
+    "fields": "$${playlists}",
+    "author": {
+      "name": "Playlists",
+      "icon_url": "https://cdn.discordapp.com/attachments/901407574048514068/950342085427490826/pngtree-playlist-icon-image_1128352.png"
+    }
+}
