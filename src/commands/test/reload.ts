@@ -4,9 +4,9 @@ export const command = new Command({
     description: "Reboots the bot",
     
     args: [],
-    execute: async (message, args, self, client) => {
-        await message.reply(`Reloading...`)
+    execute: async (context, args, self, client) => {
+        await context.reply(`Reloading...`)
         await client.onReady()
-        await message.reply(`Reloaded!`)
+        await context.reply(`Reloaded!`)
     }
 })

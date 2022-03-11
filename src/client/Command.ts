@@ -1,13 +1,14 @@
 import { Message, User, Channel } from "discord.js"
 import Client from "./Client"
+import { Context } from "./Context"
 
 export type ArgTypes = string | number | User | Channel | undefined
-export type ArgTypeReprezentations = "string" | "number" | "user" | "channel" | "string..."
+export type ArgTypeRepresentations = "string" | "number" | "user" | "channel" | "string..."
 
 type Optional<T> = T | null
 
 interface Argument {
-    type: ArgTypeReprezentations,
+    type: ArgTypeRepresentations,
     name: string,
     description?: string,
     optional?: boolean
@@ -24,7 +25,7 @@ interface CommandOptions {
     subCommands?: Command[]
 
     args: Args
-    execute: (message: Message, args: {[propName: string]: ArgTypes}, self: Command, client: Client) => Promise<void>
+    execute: (context: Context, args: {[propName: string]: ArgTypes}, self: Command, client: Client) => Promise<void>
 }
 
 export class Command {
@@ -37,7 +38,7 @@ export class Command {
     subCommands?: Command[]
 
     args: Args
-    execute: (message: Message, args: {[propName: string]: ArgTypes}, self: Command, client: Client) => Promise<void>
+    execute: (context: Context, args: {[propName: string]: ArgTypes}, self: Command, client: Client) => Promise<void>
 
     constructor(options: CommandOptions) {
         this.name = options.name

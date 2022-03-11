@@ -11,7 +11,7 @@ export interface EmbedOptions {
 
 function stringify(option: Option): string {
     if (typeof option == "string") {
-        return option.replace(/"/g, "\\\"").replace(/\n/g, "\\n")
+        return option.replace(/"/g, "\\\"").replace(/\\/g, "\\\\").replace(/\n/g, "\\n")
     }
     if (typeof option == "object") {
         if (option instanceof Array) {

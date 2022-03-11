@@ -5,7 +5,7 @@ export const command = new Command({
     description: "Shuts the bot down",
     
     args: [],
-    execute: async (self, message, args, client) => {
+    execute: async (self, context, args, client) => {
         client.client.destroy()
     }
 })

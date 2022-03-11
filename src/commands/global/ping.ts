@@ -9,7 +9,7 @@ export const command = new Command({
     category: ":tools: Miscellaneous",
     
     args: [],
-    execute: async (message) => {
-        message.reply(`Current ping is ${Date.now() - message.createdTimestamp}ms`)
+    execute: async (context) => {
+        context.reply(`Current ping is ${Date.now() - context.message.createdTimestamp}ms`)
     }
 })

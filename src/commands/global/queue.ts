@@ -5,6 +5,7 @@ import {
     AudioPlayerStatus,
 } from "@discordjs/voice"
 import { Command } from "../../client/Command"
+import { DMContext } from "../../client/Context"
 import formattedTimeToSeconds from "../../utils/formattedTimeToSeconds"
 import { parseEmbed } from "../../utils/parseEmbed"
 
@@ -28,20 +29,17 @@ export const command = new Command({
             aliases: ["view", "show"],
             description: "Shows the queue",
             args: [],
-            execute: async (message, args, self, client) => {
-                const guild = message.guild
-                if (guild == null) {
-                    await message.reply(
-                        "You must be in a guild to use this bot!"
-                    )
+            execute: async (context, args, self, client) => {
+                if (context instanceof DMContext) {
+                    context.error("You must be in a guild to use this command")
                     return
                 }
 
-                const guildMemory = client.getGuildMemory(guild)
+                const guildMemory = client.getGuildMemory(context.guild)
 
                 const player = guildMemory.player
                 if (player == null) {
-                    message.reply("The queue does not exist!")
+                    context.reply("The queue does not exist!")
                     return
                 }
 
@@ -94,7 +92,7 @@ export const command = new Command({
 
                 const songNum1 = player.queue[0]
 
-                await message.reply({
+                await context.message.reply({
                     embeds: [
                         parseEmbed("queue", {
                             length: songNum1.length,
@@ -144,22 +142,19 @@ export const command = new Command({
             name: "clear",
             description: "Clears the queue",
             args: [],
-            execute: async (message, args, self, client) => {
+            execute: async (context, args, self, client) => {
                 const song = args.song as string
 
-                const guild = message.guild
-                if (guild == null) {
-                    await message.reply(
-                        "You must be in a guild to use this bot!"
-                    )
+                if (context instanceof DMContext) {
+                    context.error("You must be in a guild to use this command")
                     return
                 }
 
-                const guildMemory = client.getGuildMemory(guild)
+                const guildMemory = client.getGuildMemory(context.guild)
 
                 const player = guildMemory.player
                 if (player == null) {
-                    message.reply(
+                    context.reply(
                         "Cannot clear the queue because the queue does not exist!"
                     )
                     return
@@ -171,8 +166,8 @@ export const command = new Command({
     ],
 
     args: [],
-    execute: async (message, args, self, client) => {
+    execute: async (context, args, self, client) => {
         const getCommand = self.subCommand("get")!
-        await getCommand.execute(message, args, self, client)
+        await getCommand.execute(context, args, self, client)
     },
 })

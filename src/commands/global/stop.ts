@@ -1,4 +1,5 @@
 import { Command } from "../../client/Command";
+import { DMContext } from "../../client/Context";
 import { flushPlayer } from "../../data/Memory";
 
 export const command = new Command({
@@ -6,20 +7,17 @@ export const command = new Command({
     category: ":musical_note: Music",
     
     args: [],
-    execute: async (message, args, self, client) => {
-        const guild = message.guild
-        if (guild == null) {
-            await message.reply(
-                "You must be in a guild to use this bot!"
-            )
+    execute: async (context, args, self, client) => {
+        if (context instanceof DMContext) {
+            context.error("You must be in a guild to use this command")
             return
         }
 
-        const guildMemory = client.getGuildMemory(guild)
+        const guildMemory = client.getGuildMemory(context.guild)
         const connection = guildMemory.connection
 
         if (connection == null) {
-            await message.reply("I'm not in a voice channel!")
+            await context.reply("I'm not in a voice channel!")
             return
         }
 

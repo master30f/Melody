@@ -7,6 +7,7 @@ import _ from "lodash"
 import formattedTimeToSeconds from "../../utils/formattedTimeToSeconds"
 import getPlaylistLength from "../../utils/getPlaylistLength"
 import formatSeconds from "../../utils/formatSeconds"
+import { DMContext } from "../../client/Context"
 
 export const command = new Command({
     aliases: ["pl"],
@@ -25,31 +26,28 @@ export const command = new Command({
                     type: "string",
                 },
             ],
-            execute: async (message, args, self, client) => {
+            execute: async (context, args, self, client) => {
                 const name = args.name as string
 
-                const guild = message.guild
-                if (guild == null) {
-                    await message.reply(
-                        "You must be in a guild to use this bot!"
-                    )
+                if (context instanceof DMContext) {
+                    context.error("You must be in a guild to use this command")
                     return
                 }
 
-                const guildMemory = client.getGuildMemory(guild)
+                const guildMemory = client.getGuildMemory(context.guild)
 
                 const player = guildMemory.player
                 if (player == null) {
-                    await message.reply("There are no songs to save!")
+                    await context.reply("There are no songs to save!")
                     return
                 }
 
-                if (client.config.guilds[guild.id].playlists == null) {
-                    client.config.guilds[guild.id].playlists = {}
+                if (client.config.guilds[context.guild.id].playlists == null) {
+                    client.config.guilds[context.guild.id].playlists = {}
                 }
-                client.config.guilds[guild.id].playlists[name] = {
+                client.config.guilds[context.guild.id].playlists[name] = {
                     songs: player.queue,
-                    author: message.author.id,
+                    author: context.sender.id,
                     name: name,
                 }
             },
@@ -64,21 +62,20 @@ export const command = new Command({
                     type: "string",
                 },
             ],
-            execute: async (message, args, self, client) => {
+            execute: async (context, args, self, client) => {
                 const name = args.name as string
-                const guild = message.guild
-                if (guild == null) {
-                    await message.reply(
-                        "You must be in a guild to use this bot!"
-                    )
+
+                if (context instanceof DMContext) {
+                    context.error("You must be in a guild to use this command")
                     return
                 }
 
-                const playlist = client.config.guilds[guild.id].playlists[name]
+                const playlist =
+                    client.config.guilds[context.guild.id].playlists[name]
 
-                const guildMemory = client.getGuildMemory(guild)
+                const guildMemory = client.getGuildMemory(context.guild)
                 if (guildMemory.connection == null) {
-                    client.runCommand(message, "join", [])
+                    client.runCommand(context.message, "join", [])
                 }
 
                 if (guildMemory.player == null) {
@@ -110,19 +107,19 @@ export const command = new Command({
                     type: "string...",
                 },
             ],
-            execute: async (message, args, self, client) => {
+            execute: async (context, args, self, client) => {
                 const playlistName = args.playlist as string
                 const songName = args.song as string
 
-                const guild = message.guild
-                if (guild == null) {
-                    await message.reply(
-                        "You must be in a guild to use this bot!"
-                    )
+                if (context instanceof DMContext) {
+                    context.error("You must be in a guild to use this command")
                     return
                 }
+
                 const playlist =
-                    client.config.guilds[guild.id].playlists[playlistName]
+                    client.config.guilds[context.guild.id].playlists[
+                        playlistName
+                    ]
                 const songSearch = (await playdl.search(songName))[0]
 
                 const song: Song = {
@@ -133,18 +130,16 @@ export const command = new Command({
                     thumbnail: songSearch.thumbnails[0].url,
                 }
                 playlist.songs.push(song)
-                await message.reply({
-                    embeds: [
-                        parseEmbed("addedToQueue", {
-                            videoName: song.name,
-                            length: song.length,
-                            channelName: song.channelName,
-                            videoLink: song.url,
-                            messageType: `Added to playlist ${playlistName}`,
-                            thumbnail: song.thumbnail,
-                        }),
-                    ],
-                })
+                await context.replyEmbed(
+                    parseEmbed("addedToQueue", {
+                        videoName: song.name,
+                        length: song.length,
+                        channelName: song.channelName,
+                        videoLink: song.url,
+                        messageType: `Added to playlist ${playlistName}`,
+                        thumbnail: song.thumbnail,
+                    })
+                )
             },
         }),
         new Command({
@@ -163,19 +158,19 @@ export const command = new Command({
                     type: "string...",
                 },
             ],
-            execute: async (message, args, self, client) => {
+            execute: async (context, args, self, client) => {
                 const playlistName = args.playlist as string
                 const songName = args.song as string
 
-                const guild = message.guild
-                if (guild == null) {
-                    await message.reply(
-                        "You must be in a guild to use this bot!"
-                    )
+                if (context instanceof DMContext) {
+                    context.error("You must be in a guild to use this command")
                     return
                 }
+
                 const playlist =
-                    client.config.guilds[guild.id].playlists[playlistName]
+                    client.config.guilds[context.guild.id].playlists[
+                        playlistName
+                    ]
                 const songSearch = (await playdl.search(songName))[0]
 
                 const song: Song = {
@@ -189,22 +184,20 @@ export const command = new Command({
                     (anotherSong) => song.url == anotherSong.url
                 )
                 if (songToBeRemoved === -1) {
-                    await message.reply("That song is not in the playlist!")
+                    await context.reply("That song is not in the playlist!")
                     return
                 }
                 playlist.songs.splice(songToBeRemoved, 1)
-                await message.reply({
-                    embeds: [
-                        parseEmbed("addedToQueue", {
-                            videoName: song.name,
-                            length: song.length,
-                            channelName: song.channelName,
-                            videoLink: song.url,
-                            messageType: `Removed from playlist ${playlistName}`,
-                            thumbnail: song.thumbnail,
-                        }),
-                    ],
-                })
+                await context.replyEmbed(
+                    parseEmbed("addedToQueue", {
+                        videoName: song.name,
+                        length: song.length,
+                        channelName: song.channelName,
+                        videoLink: song.url,
+                        messageType: `Removed from playlist ${playlistName}`,
+                        thumbnail: song.thumbnail,
+                    })
+                )
             },
         }),
         new Command({
@@ -218,19 +211,18 @@ export const command = new Command({
                     type: "string",
                 },
             ],
-            execute: async (message, args, self, client) => {
+            execute: async (context, args, self, client) => {
                 const playlistName = args.playlist as string
 
-                const guild = message.guild
-                if (guild == null) {
-                    await message.reply(
-                        "You must be in a guild to use this bot!"
-                    )
+                if (context instanceof DMContext) {
+                    context.error("You must be in a guild to use this command")
                     return
                 }
 
                 const playlist =
-                    client.config.guilds[guild.id].playlists[playlistName]
+                    client.config.guilds[context.guild.id].playlists[
+                        playlistName
+                    ]
 
                 let totalLengthSecs = 0
                 let songsEmbeds: object[] = []
@@ -254,7 +246,7 @@ export const command = new Command({
                 const formattedLength = `${
                     hours ? `${hours}:` : ""
                 }${minutes}:${seconds < 10 ? `0${seconds}` : seconds}`
-                await message.reply({
+                await context.message.reply({
                     embeds: [
                         parseEmbed("playlist", {
                             name: playlist.name,
@@ -276,18 +268,19 @@ export const command = new Command({
                     type: "string",
                 },
             ],
-            execute: async (message, args, self, client) => {
-                const guild = message.guild
+            execute: async (context, args, self, client) => {
                 const playlistName = args.playlist as string
-                if (guild == null) {
-                    await message.reply(
-                        "You must be in a guild to use this bot!"
-                    )
+
+                if (context instanceof DMContext) {
+                    context.error("You must be in a guild to use this command")
                     return
                 }
-                message.reply(`Deleting playlist ${playlistName} `)
 
-                delete client.config.guilds[guild.id].playlists[playlistName]
+                context.reply(`Deleting playlist ${playlistName} `)
+
+                delete client.config.guilds[context.guild.id].playlists[
+                    playlistName
+                ]
             },
         }),
         new Command({
@@ -301,21 +294,20 @@ export const command = new Command({
                     type: "string",
                 },
             ],
-            execute: async (message, args, self, client) => {
+            execute: async (context, args, self, client) => {
                 const playlistName = args.playlist as string
 
-                const guild = message.guild
-                if (guild == null) {
-                    await message.reply(
-                        "You must be in a guild to use this bot!"
-                    )
+                if (context instanceof DMContext) {
+                    context.error("You must be in a guild to use this command")
                     return
                 }
-                client.config.guilds[guild.id].playlists[playlistName] = {
-                    author: message.author.id,
-                    name: playlistName,
-                    songs: [],
-                }
+
+                client.config.guilds[context.guild.id].playlists[playlistName] =
+                    {
+                        author: context.sender.id,
+                        name: playlistName,
+                        songs: [],
+                    }
             },
         }),
         new Command({
@@ -323,19 +315,19 @@ export const command = new Command({
             aliases: ["all"],
             description: "Shows all playlists of this server",
             args: [],
-            execute: async (message, args, self, client) => {
-                const guild = message.guild
-                if (guild == null) {
-                    await message.reply(
-                        "You must be in a guild to use this bot!"
-                    )
+            execute: async (context, args, self, client) => {
+                if (context instanceof DMContext) {
+                    context.error("You must be in a guild to use this command")
                     return
                 }
+
                 let playlistEmbeds = []
-                for (let playlistName in client.config.guilds[guild.id]
+                for (let playlistName in client.config.guilds[context.guild.id]
                     .playlists) {
                     const playlist =
-                        client.config.guilds[guild.id].playlists[playlistName]
+                        client.config.guilds[context.guild.id].playlists[
+                            playlistName
+                        ]
                     const playlistEmbed = parseEmbed("playlist/list/playlist", {
                         playlistName: playlistName,
                         playlistLength: formatSeconds(
@@ -346,15 +338,15 @@ export const command = new Command({
                     })
                     playlistEmbeds.push(playlistEmbed)
                 }
-                const playlistNum = Object.values(client.config.guilds[guild.id].playlists).length
+                const playlistNum = Object.values(
+                    client.config.guilds[context.guild.id].playlists
+                ).length
                 const embed = parseEmbed("playlist/list", {
                     playlistNum: playlistNum,
                     playlists: playlistEmbeds,
-                    s: playlistNum == 1 ? "" : "s"
+                    s: playlistNum == 1 ? "" : "s",
                 })
-                await message.reply({
-                    embeds: [embed]
-                })
+                await context.replyEmbed(embed)
             },
         }),
     ],

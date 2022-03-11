@@ -1,4 +1,5 @@
 import { Command } from "../../client/Command";
+import { DMContext } from "../../client/Context";
 
 export const command = new Command({
     aliases: [
@@ -10,21 +11,17 @@ export const command = new Command({
     category: ":musical_note: Music",
     
     args: [],
-    execute: async (message, args, self, client) => {
-        const guild = message.guild
-
-        if (guild == null) {
-            await message.reply(
-                "You must be in a guild to use this bot!"
-            )
+    execute: async (context, args, self, client) => {
+        if (context instanceof DMContext) {
+            context.error("You must be in a guild to use this command")
             return
         }
 
-        const guildMemory = client.getGuildMemory(guild)
+        const guildMemory = client.getGuildMemory(context.guild)
 
         const player = guildMemory.player
         if (player == null) {
-            await message.reply("Nothing is playing!")
+            await context.reply("Nothing is playing!")
             return
         }
 

@@ -1,5 +1,6 @@
 import { CommandInteractionOptionResolver } from "discord.js"
 import { Command } from "../../client/Command"
+import { DMContext } from "../../client/Context"
 import { parseEmbed } from "../../utils/parseEmbed"
 
 export const command = new Command({
@@ -14,14 +15,19 @@ export const command = new Command({
             optional: true,
         },
     ],
-    execute: async (message, args, self, client) => {
+    execute: async (context, args, self, client) => {
         const cmd = args.command as string | undefined
+
+        if (context instanceof DMContext) {
+            context.error("You must be in a guild to use this command")
+            return
+        }
 
         if (cmd != null) {
             let command = client.globalCommands.get(cmd)
 
             if (command != null) {
-                const prefix = client.getPrefix(message.guild)
+                const prefix = client.getPrefix(context.guild)
 
                 const argsEmbed = parseEmbed("help/command/arguments", {
                     arguments: command.args
@@ -39,8 +45,8 @@ export const command = new Command({
                 })
 
                 const subsEmbed = parseEmbed("help/command/subcommands", {
-                    subcommands: (command.subCommands || []).map(
-                        (subCommand) => {
+                    subcommands: (command.subCommands || [])
+                        .map((subCommand) => {
                             let argReps: string[] = []
 
                             for (const arg of subCommand.args) {
@@ -60,8 +66,8 @@ export const command = new Command({
                                     ? `*${subCommand.description}*`
                                     : ""
                             }${subCommand.subCommands ? " :book:" : ""}`
-                        }
-                    ).join("\n"),
+                        })
+                        .join("\n"),
                 })
 
                 let fields = []
@@ -69,23 +75,20 @@ export const command = new Command({
                 if (command.subCommands && command.subCommands.length > 0)
                     fields.push(subsEmbed)
 
-                await message.reply({
-                    embeds: [
-                        parseEmbed("help/command", {
-                            name: command.name!,
-                            description: command.description || "None",
-                            category: command.category || "None",
-                            aliases: command.aliases
-                                ? command.aliases.join(", ")
-                                : "None",
-                            fields: fields,
-                            prefix:
-                                typeof prefix == "string" ? prefix : prefix[0],
-                        }),
-                    ],
-                })
+                await context.replyEmbed(
+                    parseEmbed("help/command", {
+                        name: command.name!,
+                        description: command.description || "None",
+                        category: command.category || "None",
+                        aliases: command.aliases
+                            ? command.aliases.join(", ")
+                            : "None",
+                        fields: fields,
+                        prefix: typeof prefix == "string" ? prefix : prefix[0],
+                    })
+                )
             } else {
-                await message.reply(`Could not find command ${cmd}`)
+                await context.reply(`Could not find command ${cmd}`)
             }
         } else {
             const categories: Map<string, Command[]> = new Map()
@@ -130,15 +133,13 @@ export const command = new Command({
                 )
             }
 
-            const prefix = client.getPrefix(message.guild)
-            await message.reply({
-                embeds: [
-                    parseEmbed("help", {
-                        prefix: typeof prefix == "string" ? prefix : prefix[0],
-                        categories: categoryEmbeds,
-                    }),
-                ],
-            })
+            const prefix = client.getPrefix(context.guild)
+            await context.replyEmbed(
+                parseEmbed("help", {
+                    prefix: typeof prefix == "string" ? prefix : prefix[0],
+                    categories: categoryEmbeds,
+                })
+            )
             return
         }
     },

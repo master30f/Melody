@@ -4,6 +4,8 @@ import { Memory, LocalMemory } from "../data/Memory"
 import glob from "glob"
 import { writeFileSync } from "fs"
 import { Command, ArgTypes } from "./Command"
+import { parseEmbed } from "../utils/parseEmbed"
+import { Context, DMContext, GuildContext } from "./Context"
 
 class BreakError {
     type: "NaN" | "NaU" | "NaC"
@@ -14,8 +16,8 @@ class BreakError {
 }
 
 interface ClientOptions {
-    commandsDir: string,
-    configFile: string,
+    commandsDir: string
+    configFile: string
     testServer?: Array<string> | string
 }
 
@@ -26,7 +28,6 @@ interface ClientOptions {
 */
 
 export default class Client {
-
     /*
         |--------|
         | Fields |
@@ -59,14 +60,13 @@ export default class Client {
             intents: [
                 Intents.FLAGS.GUILDS,
                 Intents.FLAGS.GUILD_MESSAGES,
-                Intents.FLAGS.GUILD_VOICE_STATES
-            ]
+                Intents.FLAGS.GUILD_VOICE_STATES,
+            ],
         })
-        
+
         this.client.on("ready", this.onReady.bind(this))
         this.client.on("messageCreate", this.onMessageCreate.bind(this))
         this.client.on("shardDisconnect", this.onShardDisconnect.bind(this))
-
     }
 
     async login(token: string) {
@@ -90,25 +90,35 @@ export default class Client {
             throw Error("guild is null")
         }
         if (!this.config.guilds[guild.id]) {
-            this.config.guilds[guild.id] = {settings: this.config.settings, playlists: {}}
+            this.config.guilds[guild.id] = {
+                settings: this.config.settings,
+                playlists: {},
+            }
         }
         return this.config.guilds[guild.id].settings
     }
 
     getGuildMemory(guild: Guild): LocalMemory {
         if (!this.memory.guilds[guild.id]) {
-            this.memory.guilds[guild.id] = {connection: undefined, player: undefined}
+            this.memory.guilds[guild.id] = {
+                connection: undefined,
+                player: undefined,
+            }
         }
         return this.memory.guilds[guild.id]
     }
 
     fillCommand(command: Command, file: string): Command {
         if (!command.name) {
-            let fileName = file.split('\\').pop()?.split('/').pop()?.split(".")[0];
+            let fileName = file
+                .split("\\")
+                .pop()
+                ?.split("/")
+                .pop()
+                ?.split(".")[0]
             if (fileName) {
                 command.name = fileName
-            }
-            else {
+            } else {
                 console.log("Could not find the name!")
                 command.name = "missingname"
             }
@@ -144,24 +154,44 @@ export default class Client {
         console.log(`Successfully added ${files.length} global commands!`)
     }
 
-    async executeCommand(commandName: string, command: Command, message: Message, args: string[]) {
-            console.log(`Found command '${commandName}'`)
+    async executeCommand(
+        commandName: string,
+        command: Command,
+        context: Context,
+        args: string[]
+    ) {
+        console.log(`Found command '${commandName}'`)
 
-        if (command.args.length === 0 || command.args[command.args.length-1].type !== "string...") {
+        if (
+            command.args.length === 0 ||
+            command.args[command.args.length - 1].type !== "string..."
+        ) {
             const possibleLenghts: number[] = []
-            const optionalArgs = command.args.filter((arg) => arg.optional === true)
+            const optionalArgs = command.args.filter(
+                (arg) => arg.optional === true
+            )
             for (let i = 0; i <= optionalArgs.length; i++) {
-                possibleLenghts.push(command.args.length - optionalArgs.length + i)
+                possibleLenghts.push(
+                    command.args.length - optionalArgs.length + i
+                )
             }
 
             //TODO: make it better
 
-            if (!(possibleLenghts.includes(args.length))) {
-                await message.reply(`Invalid number of arguments. Expected ${optionalArgs.length === 0 ? command.args.length : `${command.args.length-optionalArgs.length}-${command.args.length}`}, got ${args.length}`)
+            if (!possibleLenghts.includes(args.length)) {
+                await context.message.reply(
+                    `Invalid number of arguments. Expected ${
+                        optionalArgs.length === 0
+                            ? command.args.length
+                            : `${command.args.length - optionalArgs.length}-${
+                                  command.args.length
+                              }`
+                    }, got ${args.length}`
+                )
                 return
             }
         }
-        let newArgs: {[propName: string]: ArgTypes} = {}
+        let newArgs: { [propName: string]: ArgTypes } = {}
         try {
             let index = 0
             let exit = false
@@ -187,11 +217,9 @@ export default class Client {
                         break
                     }
                     case "user": {
-
                         break
                     }
                     case "channel": {
-
                         break
                     }
                 }
@@ -202,30 +230,42 @@ export default class Client {
             if (!(e instanceof BreakError)) throw e
             switch (e.type) {
                 case "NaN": {
-                    message.reply("Argument is not a number!")
+                    context.message.reply("Argument is not a number!")
                     return
                 }
             }
         }
 
-        await command.execute(message, newArgs, command, this)
-            console.log(`Executed command '${commandName}'\n`)
+        await command.execute(context, newArgs, command, this)
+        console.log(`Executed command '${commandName}'\n`)
     }
 
-    async runCommand(message: Message, commandName: string, args: string[], storage: Map<string, Command> = this.testCommands, useTwoStorages: boolean = true, storage2: Map<string, Command> = this.globalCommands, noCommandCallback?: (commandName: string) => Promise<void>) {
+    async runCommand(
+        message: Message,
+        commandName: string,
+        args: string[],
+        storage: Map<string, Command> = this.testCommands,
+        useTwoStorages: boolean = true,
+        storage2: Map<string, Command> = this.globalCommands,
+        noCommandCallback?: (commandName: string) => Promise<void>
+    ) {
         let command: Command | undefined
 
         //TODO: Overhaul alias system
 
         if (storage == this.testCommands) {
-            if (this.testServer != null && message.guildId != null && (this.testServer.includes(message.guildId) || message.guildId === this.testServer)) {
+            if (
+                this.testServer != null &&
+                message.guildId != null &&
+                (this.testServer.includes(message.guildId) ||
+                    message.guildId === this.testServer)
+            ) {
                 let value = storage.get(commandName)
                 if (value != null) {
                     command = value
                 }
             }
-        }
-        else {
+        } else {
             let value = storage.get(commandName)
             if (value != null) {
                 command = value
@@ -236,8 +276,7 @@ export default class Client {
             const aliasTarget = this.globalAliases.get(commandName)
             if (value != null) {
                 command = value
-            }
-            else if (aliasTarget) {
+            } else if (aliasTarget) {
                 value = storage2.get(aliasTarget)
                 if (value != null) {
                     command = value
@@ -249,11 +288,13 @@ export default class Client {
                 await message.reply(`Could not find command '${commandName}'`)
                 console.log(`Could not find command '${commandName}'`)
             } else {
-                console.log(`Could not find command '${commandName}', invoking callback function`)
+                console.log(
+                    `Could not find command '${commandName}', invoking callback function`
+                )
                 await noCommandCallback(commandName)
             }
-        }
-        else {
+        } else {
+            const context: Context = message.guild == null ? new DMContext(message) : new GuildContext(message)
             if (command.subCommands != null) {
                 console.log(`Found super-command '${commandName}'`)
                 let map: Map<string, Command> = new Map()
@@ -263,16 +304,29 @@ export default class Client {
                         message.reply("Error")
                     } else {
                         map.set(subCommand.name, subCommand)
-                        for(let alias of subCommand.aliases || []){
+                        for (let alias of subCommand.aliases || []) {
                             map.set(alias, subCommand)
                         }
                     }
                 })
-                await this.runCommand(message, args[0], args.slice(1), map, false, undefined, async () => {
-                    await this.executeCommand(commandName, command!, message, args)
-                })
+                await this.runCommand(
+                    message,
+                    args[0],
+                    args.slice(1),
+                    map,
+                    false,
+                    undefined,
+                    async () => {
+                        await this.executeCommand(
+                            commandName,
+                            command!,
+                            context,
+                            args
+                        )
+                    }
+                )
             } else {
-                await this.executeCommand(commandName, command, message, args)
+                await this.executeCommand(commandName, command, context, args)
             }
         }
     }
@@ -304,32 +358,44 @@ export default class Client {
         console.log("Logged in to Discord")
 
         let testCommands = glob.sync(`${this.commandsDir}/test/**/*.ts`)
-        testCommands.length === 0 ? console.log("No test commands found") : this.addTestCommands(testCommands)
+        testCommands.length === 0
+            ? console.log("No test commands found")
+            : this.addTestCommands(testCommands)
 
         let globalCommands = glob.sync(`${this.commandsDir}/global/**/*.ts`)
-        globalCommands.length === 0 ? console.log("No global commands found") : this.addGlobalCommands(globalCommands)
+        globalCommands.length === 0
+            ? console.log("No global commands found")
+            : this.addGlobalCommands(globalCommands)
 
         console.log("Bot is initialized\n")
     }
 
     async onMessageCreate(message: Message) {
-        let length = this.hasPrefix(message.content, this.getPrefix(message.guild))
+        let length = this.hasPrefix(
+            message.content,
+            this.getPrefix(message.guild)
+        )
         if (length != null) {
-            let str = message.content.substr(length).replace(/\s+/g,' ').trim();
+            let str = message.content.substr(length).replace(/\s+/g, " ").trim()
             let pieces = str.split(" ")
             let commandName = pieces[0].toLowerCase()
             let args = pieces.slice(1)
-                console.log(`Received command '${commandName}'`)
+            console.log(`Received command '${commandName}'`)
 
             try {
                 await this.runCommand(message, commandName, args)
-            }
-            catch (error) {
+            } catch (error) {
                 if (error instanceof Error) {
-                    await message.reply(`Oops... something went wrong executing this command!\nError:\n${error.name} - ${error.message}\nStack trace:\n${error.stack}`)
-                }
-                else {
-                    await message.reply(`Oops... something went wrong executing this command!\nError:\n${error}`)
+                    await message.reply({
+                        embeds: [parseEmbed("error", {
+                            title: error.name,
+                            description: `\`\`\`js\n${error.stack}\n\`\`\``
+                        })]
+                    })
+                } else {
+                    await message.reply(
+                        `Oops... something went wrong executing this command!\nError:\n${error}`
+                    )
                 }
             }
         }
@@ -341,5 +407,4 @@ export default class Client {
         writeFileSync(this.configFile, JSON.stringify(this.config))
         console.log("Shut down successful")
     }
-
 }
